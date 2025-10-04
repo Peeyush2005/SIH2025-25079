@@ -1,0 +1,23 @@
+Clear
+! Define Circuit Source and Base Frequency
+New Circuit.TestFeeder BasekV=11 R1=0.01 X1=0.05 R0=0.03 X0=0.1 Angle=0 Freq=60 MVAsc3=2000 MVAsc1=2100
+Edit Vsource.Source phases=3 bus1=SourceBus BasekV=11 pu=1.0
+
+! Define the MV/LV Transformer (use per-winding syntax)
+New Transformer.T1 Phases=3 Windings=2 Xhl=5
+~ Wdg=1 Bus=SourceBus.1.2.3 Conn=wye kV=11 kVA=500
+~ Wdg=2 Bus=LVBus.1.2.3.0 Conn=wye kV=0.4 kVA=500
+
+! Define the LT Line (0.4 kV) - This is the line we monitor
+New Line.L1 phases=3 bus1=LVBus bus2=LoadBus
+~ R1=0.15 X1=0.20 R0=0.30 X0=0.60
+~ Length=0.5 units=km
+
+! Define Unbalanced Loads on the LT side (LoadBus)
+New Load.L_A bus1=LoadBus.1 phases=1 conn=wye kV=0.4 kW=100 kvar=50
+New Load.L_B bus1=LoadBus.2 phases=1 conn=wye kV=0.4 kW=120 kvar=60
+New Load.L_C bus1=LoadBus.3 phases=1 conn=wye kV=0.4 kW=90 kvar=45
+
+Set voltagebases=[11, 0.4]
+CalcVoltageBases
+Solve
