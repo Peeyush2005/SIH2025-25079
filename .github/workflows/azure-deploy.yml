@@ -8,6 +8,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: bcf-detection-1759662837
   PYTHON_VERSION: '3.9'
+  RESOURCE_GROUP: bcf-detection-rg
 
 jobs:
   build:
