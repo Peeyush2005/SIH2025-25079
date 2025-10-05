@@ -30,6 +30,8 @@ function trySpawn(cmd, args) {
 async function runPython(args) {
   const candidates = [
     ['/usr/bin/python3', []],
+    ['/usr/local/bin/python3', []],
+    [process.env.PYTHON_PATH || 'python3', []],
     ['python3', []],
     ['py', ['-3']],
     ['py', []],
@@ -61,7 +63,9 @@ app.get('/api/chart-data', async (_req, res) => {
 
 // Run the full simulation and return console output
 app.get('/api/run', async (_req, res) => {
+  console.log('BCF simulation requested');
   const result = await runPython([]);
+  console.log('Python result:', { ok: result.ok, error: result.err, hasOutput: !!result.out });
   if (result.ok) return res.json({ output: result.out });
   return res.json({ output: 'Python/OpenDSS not available. Showing demo data on the chart. Error: ' + result.err });
 });
