@@ -29,18 +29,29 @@ function trySpawn(cmd, args) {
 
 async function runPython(args) {
   const candidates = [
-    ['/usr/bin/python3', []],
-    ['/usr/local/bin/python3', []],
-    [process.env.PYTHON_PATH || 'python3', []],
-    ['python3', []],
+    ['/usr/local/bin/python3', []], // Docker Python path
+    ['/usr/bin/python3', []], // System Python path
+    ['python3', []], // PATH Python
+    [process.env.PYTHON_PATH || 'python3', []], // Environment variable
     ['py', ['-3']],
     ['py', []],
     ['python', []],
   ];
+  
+  console.log('Attempting to run Python script with args:', args);
+  
   for (const [cmd, prefix] of candidates) {
+    console.log(`Trying Python command: ${cmd} ${prefix.join(' ')}`);
     const result = await trySpawn(cmd, [...prefix, scriptPath, ...args]);
-    if (result.ok && result.out.trim()) return result;
+    console.log(`Result for ${cmd}:`, { ok: result.ok, hasOutput: !!result.out, error: result.err });
+    
+    if (result.ok && result.out.trim()) {
+      console.log('✅ Python execution successful with:', cmd);
+      return result;
+    }
   }
+  
+  console.log('❌ All Python execution attempts failed');
   return { ok: false, out: '', err: 'No python found or script failed' };
 }
 
