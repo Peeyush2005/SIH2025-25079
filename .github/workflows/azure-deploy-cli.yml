@@ -1,4 +1,4 @@
-name: Deploy to Azure Web App (Alternative)
+name: Deploy Node.js App to Azure
 
 on:
   push:
@@ -10,6 +10,7 @@ permissions:
 
 env:
   AZURE_WEBAPP_NAME: bcf-detection-1759662837
+  NODE_VERSION: '18.x'
   PYTHON_VERSION: '3.9'
   RESOURCE_GROUP: bcf-detection-rg
 
@@ -20,7 +21,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python version
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Set up Python for BCF script
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
@@ -33,25 +40,28 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Create and start virtual environment
-      run: |
-        python -m venv venv
-        source venv/bin/activate
+    - name: Install Node.js dependencies
+      run: npm install
 
-    - name: Install dependencies
+    - name: Install Python dependencies
       run: |
-        source venv/bin/activate
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     - name: Test BCF Detection Script
+      run: python bcf_detecter.py
+
+    - name: Test Node.js server locally
       run: |
-        source venv/bin/activate
-        python bcf_detecter.py
+        node server.js &
+        sleep 5
+        curl -f "http://localhost:3000/api/health" || exit 1
+        pkill node
+        echo "✅ Node.js server test passed!"
 
     - name: Create deployment package
       run: |
-        zip -r deploy.zip . -x "*.git*" "*.pyc" "__pycache__/*" "venv/*" ".venv/*" "*.zip" "node_modules/*"
+        zip -r deploy.zip . -x "*.git*" "*.pyc" "__pycache__/*" "venv/*" ".venv/*" "*.zip"
 
     - name: Login to Azure
       uses: azure/login@v1
@@ -67,6 +77,6 @@ jobs:
 
     - name: Test deployment
       run: |
-        sleep 30
-        curl -f "https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/test" || exit 1
-        echo "✅ Deployment successful!"
+        sleep 45
+        curl -f "https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/api/health" || exit 1
+        echo "✅ Node.js deployment successful!"
