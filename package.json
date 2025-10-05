@@ -1,0 +1,24 @@
+{
+  "name": "sih-final-submission-2",
+  "version": "1.0.0",
+  "description": "This small project shows how a relay could detect a Broken Conductor Fault (BCF) on a low‑voltage feeder using OpenDSS.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:8080": "set PORT=8080&& node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sharon-codes/SIH-2025-79.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sharon-codes/SIH-2025-79/issues"
+  },
+  "homepage": "https://github.com/Sharon-codes/SIH-2025-79#readme",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}

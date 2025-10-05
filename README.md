@@ -28,6 +28,19 @@ This small project shows how a relay could detect a Broken Conductor Fault (BCF)
 - `bcf_detecter.py`: Python script that runs the detection logic and prints results.
 - `LT_Feeder_Model.dss`: Simple OpenDSS feeder used by the script.
 
+### Tech Stack
+| Category | Technology | Key Feature |
+|---|---|---|
+| Language | Python 3.11 | Simple scripting with rich ecosystem |
+| Simulation Engine | OpenDSS + `OpenDSSDirect.py` | Fast, industry‑proven distribution system solver |
+| Math/Signals | NumPy | Complex numbers and symmetrical components math |
+| Model Format | OpenDSS `.dss` files | Human‑readable circuit definitions |
+| Runner/CLI | Python CLI (PowerShell) | One‑command execution on Windows |
+| Protection Logic | ANSI 46 (Negative‑Sequence/BCF) | Ratio `I2/I1` with definite‑time delay |
+| Output/Visualization | Console logs | Clear step‑by‑step status and trip messages |
+| Env Management | `venv` / conda (optional) | Reproducible Python environment |
+| OS Target | Windows 10/11 | Native OpenDSS support |
+
 ### Requirements
 - Windows, Python 3.11 recommended
 - Packages: `OpenDSSDirect.py`, `numpy`

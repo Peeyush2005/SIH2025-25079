@@ -2,6 +2,8 @@ import opendssdirect as dss
 import numpy as np
 import time
 import os
+import json
+import sys
 
 # --- 1. PROTECTION SETTINGS (Typical ANSI 46BC Parameters) ---
 # The monitored device (where the Smart Relay measures current)
@@ -95,44 +97,79 @@ def run_46bc_logic(I_a, I_b, I_c):
         print("  I2/I1 ratio is normal.")
         return False
 
+def get_simulation_data():
+    """
+    Runs the simulation for both healthy and faulted states and returns
+    the sequence current data.
+    """
+    dss_file = 'LT_Feeder_Model.dss'
+    if not os.path.exists(dss_file):
+        return {"error": f"OpenDSS file '{dss_file}' not found."}
+
+    dss.Text.Command('clear')
+    dss.Text.Command(f'compile "{dss_file}"')
+    dss.Solution.Solve()
+
+    # Healthy case
+    I_a_h, I_b_h, I_c_h = get_current_measurements(MONITORING_DEVICE)
+    I1_h, I2_h = calculate_sequence_currents(I_a_h, I_b_h, I_c_h)
+
+    # Fault case
+    dss.Text.Command('open line.L1 term=2 phase=1')
+    dss.Solution.Solve()
+    I_a_f, I_b_f, I_c_f = get_current_measurements(MONITORING_DEVICE)
+    I1_f, I2_f = calculate_sequence_currents(I_a_f, I_b_f, I_c_f)
+    
+    return {
+        "healthy": {"I1": I1_h, "I2": I2_h},
+        "faulted": {"I1": I1_f, "I2": I2_f}
+    }
+
+
 # --- 4. EXECUTION SIMULATION ---
 
 if __name__ == "__main__":
-    dss_file = 'LT_Feeder_Model.dss'
     
-    # Check if the OpenDSS model file exists
-    if not os.path.exists(dss_file):
-        print(f"Error: OpenDSS file '{dss_file}' not found. Please create it first.")
+    # Check if a command line argument is passed
+    if len(sys.argv) > 1 and sys.argv[1] == '--json':
+        data = get_simulation_data()
+        print(json.dumps(data))
     else:
-        print("-" * 50)
-        print("--- Broken Conductor Detection Software Simulation ---")
+        dss_file = 'LT_Feeder_Model.dss'
         
-        # Initialize and Compile OpenDSS Model
-        dss.Text.Command('clear')
-        dss.Text.Command(f'compile "{dss_file}"')
-        dss.Solution.Solve()
-        print(f"1. Model Compiled: '{dss_file}'")
-        
-        # --- CASE 1: HEALTHY SYSTEM OPERATION ---
-        print("\n--- CASE 1: HEALTHY OPERATION ---")
-        I_a_h, I_b_h, I_c_h = get_current_measurements(MONITORING_DEVICE)
-        
-        is_tripped = run_46bc_logic(I_a_h, I_b_h, I_c_h)
-        print(f"-> Healthy System Status: {'TRIPPED' if is_tripped else 'NORMAL'}")
-        
-        # --- CASE 2: SIMULATE BROKEN CONDUCTOR FAULT (BCF) ---
-        print("\n--- CASE 2: SIMULATE BCF (Phase A Open) ---")
-        
-        # Simulate the BCF by opening the circuit path on Phase A (phase 1) of Line.L1
-        # This models the mechanical break of the conductor
-        dss.Text.Command('open line.L1 term=2 phase=1') 
-        dss.Solution.Solve()
-        print(f"2. Fault Simulated: Phase A of {MONITORING_DEVICE} is open.")
-        
-        # Run the detection logic again on the new faulted measurements
-        I_a_f, I_b_f, I_c_f = get_current_measurements(MONITORING_DEVICE)
-        
-        is_tripped = run_46bc_logic(I_a_f, I_b_f, I_c_f)
-        print(f"-> Faulted System Status: {'TRIPPED' if is_tripped else 'NORMAL'}")
-        
-        print("-" * 50)
+        # Check if the OpenDSS model file exists
+        if not os.path.exists(dss_file):
+            print(f"Error: OpenDSS file '{dss_file}' not found. Please create it first.")
+        else:
+            print("-" * 50)
+            print("--- Broken Conductor Detection Software Simulation ---")
+            
+            # Initialize and Compile OpenDSS Model
+            dss.Text.Command('clear')
+            dss.Text.Command(f'compile "{dss_file}"')
+            dss.Solution.Solve()
+            print(f"1. Model Compiled: '{dss_file}'")
+            
+            # --- CASE 1: HEALTHY SYSTEM OPERATION ---
+            print("\n--- CASE 1: HEALTHY OPERATION ---")
+            I_a_h, I_b_h, I_c_h = get_current_measurements(MONITORING_DEVICE)
+            
+            is_tripped = run_46bc_logic(I_a_h, I_b_h, I_c_h)
+            print(f"-> Healthy System Status: {'TRIPPED' if is_tripped else 'NORMAL'}")
+            
+            # --- CASE 2: SIMULATE BROKEN CONDUCTOR FAULT (BCF) ---
+            print("\n--- CASE 2: SIMULATE BCF (Phase A Open) ---")
+            
+            # Simulate the BCF by opening the circuit path on Phase A (phase 1) of Line.L1
+            # This models the mechanical break of the conductor
+            dss.Text.Command('open line.L1 term=2 phase=1') 
+            dss.Solution.Solve()
+            print(f"2. Fault Simulated: Phase A of {MONITORING_DEVICE} is open.")
+            
+            # Run the detection logic again on the new faulted measurements
+            I_a_f, I_b_f, I_c_f = get_current_measurements(MONITORING_DEVICE)
+            
+            is_tripped = run_46bc_logic(I_a_f, I_b_f, I_c_f)
+            print(f"-> Faulted System Status: {'TRIPPED' if is_tripped else 'NORMAL'}")
+            
+            print("-" * 50)

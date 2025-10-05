@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LT Line Broken-Conductor Protection – Smart Relay Demo</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-wrap">
+            <div class="brand">⚡ Smart LT Protection</div>
+            <div class="nav-actions">
+                <nav class="nav-links">
+                    <a href="#problem">Problem</a>
+                    <a href="#solution">Solution</a>
+                    <a href="#features">Features</a>
+                    <a href="#how">How it works</a>
+                    <a href="#impact">Impact</a>
+                    <a href="#feasibility">Feasibility</a>
+                    <a class="cta" href="#simulation">Try simulation</a>
+                </nav>
+                <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero gradient-teal">
+        <div class="container hero-content">
+            <h1>Detect and isolate broken LT lines – faster, safer, smarter.</h1>
+            <p>When a low-tension conductor breaks, the electrical system becomes dangerously unbalanced. Our software-based protection monitors current patterns in real time, identifies the fault within seconds, and commands the switchgear to isolate the affected section. This keeps people safe, protects equipment, and minimizes power outages.</p>
+            <div class="hero-cta">
+                <a class="btn primary" href="#simulation">Run live simulation</a>
+                <a class="btn ghost" href="#solution">Learn more</a>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section id="problem" class="section reveal">
+            <div class="container">
+                <h2>The problem: Broken conductors in LT distribution</h2>
+                <div class="content-balanced">
+                    <div class="rich-text">
+                        <p>Low-tension (LT) distribution networks carry electricity from transformers to homes and businesses. When a conductor snaps—due to aging, weather, mechanical stress, or animal contact—a dangerous condition called a <strong>broken conductor fault (BCF)</strong> occurs. Unlike a short circuit, where current spikes dramatically, a broken conductor creates an <strong>unbalanced three-phase system</strong>.</p>
+                        <p>In this unbalanced state, one phase may be completely disconnected while the other two continue to deliver power. The result is abnormal voltages on the load side, which can damage sensitive equipment like motors, refrigerators, and electronics. Single-phase loads may experience overvoltage while three-phase motors run on only two phases, leading to overheating and mechanical failure.</p>
+                        <p>Traditional overcurrent relays struggle with BCFs because the fault current may not be significantly higher than normal load current. This means the fault can persist undetected, creating safety hazards such as downed wires energized at lethal voltages, fire risks, and prolonged equipment damage.</p>
+                    </div>
+                    <div class="card-balanced">
+                        <h3>Why traditional protection falls short</h3>
+                        <ul class="checklist">
+                            <li>Overcurrent relays don't see the unbalance, only total current</li>
+                            <li>Voltage-based methods need sensors on both ends</li>
+                            <li>False trips during low-load or switching events</li>
+                            <li>No clear indication of which phase is affected</li>
+                        </ul>
+                        <p class="note">We need a method that specifically detects unbalance and operates reliably under all load conditions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solution" class="section alt reveal">
+            <div class="container">
+                <h2>Our solution: Sequence-based detection (ANSI 46BC)</h2>
+                <div class="content-balanced">
+                    <div class="rich-text">
+                        <p>Our approach uses a well-established power-system concept called <strong>symmetrical components</strong>. Any set of three-phase currents can be decomposed into three balanced sets:</p>
+                        <ul class="feature-list">
+                            <li><strong>Positive sequence (I1):</strong> Represents normal, balanced operation (A-B-C rotation)</li>
+                            <li><strong>Negative sequence (I2):</strong> Represents unbalance (A-C-B rotation)</li>
+                            <li><strong>Zero sequence (I0):</strong> Represents ground faults (all phases in phase)</li>
+                        </ul>
+                        <p>In a healthy three-phase system, the negative sequence (I2) is nearly zero. When a conductor breaks, I2 rises sharply because the system is no longer balanced. By monitoring the <strong>ratio I2/I1</strong>, we create a sensitive, load-independent indicator of broken conductor conditions.</p>
+                        <p>The algorithm continuously measures the three phase currents (A, B, C), computes I1 and I2 using Fortescue's transformation, and compares the ratio to a configurable threshold (typically 15%). If the ratio exceeds the threshold and I1 is above a minimum load level, a timer starts. If the condition persists for the set time (typically 1 second), the relay issues a trip command to isolate the feeder.</p>
+                    </div>
+                    <div class="card-balanced">
+                        <h3>Key advantages</h3>
+                        <ul class="checklist">
+                            <li><strong>Load-independent:</strong> The ratio removes the effect of load variations</li>
+                            <li><strong>Selective:</strong> Only responds to unbalance, not normal load changes</li>
+                            <li><strong>Secure:</strong> Time delay and minimum-load check prevent false trips</li>
+                            <li><strong>Transparent:</strong> Clear metrics (I1, I2, ratio) for operators</li>
+                        </ul>
+                        <p class="note">This method is standardized as ANSI Device 46BC in protection engineering.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="section reveal">
+            <div class="container">
+                <h2>Key features and capabilities</h2>
+                <div class="features">
+                    <div class="feature">
+                        <div class="icon">🎯</div>
+                        <h3>Accurate detection</h3>
+                        <p>Sequence components separate unbalance from normal load for highly accurate detection.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">🔒</div>
+                        <h3>Secure operation</h3>
+                        <p>Minimum threshold and time delay prevent nuisance trips during low-load conditions.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">📊</div>
+                        <h3>Transparent logic</h3>
+                        <p>Clear metrics (I1, I2, ratio) provide full visibility with no black-box algorithms.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">⚙️</div>
+                        <h3>Configurable</h3>
+                        <p>Thresholds and delays can be tuned to match each feeder's unique characteristics.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">🚀</div>
+                        <h3>Fast response</h3>
+                        <p>Detects faults within 1-2 seconds to minimize exposure and protect equipment.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">💻</div>
+                        <h3>Software-first</h3>
+                        <p>Runs on modern relays or edge devices with minimal hardware changes required.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">🔌</div>
+                        <h3>Easy retrofit</h3>
+                        <p>Works with existing sensors and switchgear to reduce deployment time and costs.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">📈</div>
+                        <h3>Data logging</h3>
+                        <p>Records all fault events with timestamps and current values for detailed analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how" class="section alt reveal">
+            <div class="container">
+                <h2>How the algorithm works</h2>
+                <div class="how-content">
+                    <h3>Step-by-step process</h3>
+                    <ol class="steps-detailed">
+                        <li>
+                            <h4>Measure phase currents</h4>
+                            <p>Current transformers (CTs) on each phase (A, B, C) provide real-time current measurements. The protection device samples these at high frequency (typically 64 samples per cycle).</p>
+                        </li>
+                        <li>
+                            <h4>Compute symmetrical components</h4>
+                            <p>Using Fortescue's transformation, the three phase currents are decomposed into positive (I1), negative (I2), and zero (I0) sequence components. This mathematical operation uses complex numbers and the operator α.</p>
+                        </li>
+                        <li>
+                            <h4>Security check: Minimum load</h4>
+                            <p>The algorithm checks if I1 is above a minimum threshold (typically 8-10% of rated current). This prevents false trips when the feeder is lightly loaded or off.</p>
+                        </li>
+                        <li>
+                            <h4>Evaluate the I2/I1 ratio</h4>
+                            <p>The ratio of negative to positive sequence is calculated. In healthy operation, this is typically less than 5%. In a broken conductor condition, it exceeds 15-25%.</p>
+                        </li>
+                        <li>
+                            <h4>Definite-time delay</h4>
+                            <p>If the ratio exceeds the threshold, a timer starts. The condition must persist for the full delay period (typically 0.5-2 seconds) to confirm the fault and avoid transient-triggered trips.</p>
+                        </li>
+                        <li>
+                            <h4>Issue trip command</h4>
+                            <p>Once the time delay expires, the relay asserts a trip output, opening the feeder circuit breaker or recloser to isolate the fault.</p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <section id="impact" class="section reveal">
+            <div class="container">
+                <h2>Impact and benefits</h2>
+                <div class="grid-3">
+                    <div class="card stat">
+                        <div class="stat-icon">🛡️</div>
+                        <h3>Enhanced safety</h3>
+                        <p>Faster fault isolation reduces the time that downed conductors remain energized, protecting the public and utility crews from electrical hazards.</p>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-icon">⚙️</div>
+                        <h3>Equipment protection</h3>
+                        <p>Motors, transformers, and consumer appliances experience less thermal and electrical stress, extending their operational life and reducing replacement costs.</p>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-icon">📉</div>
+                        <h3>Reduced outages</h3>
+                        <p>Selective tripping limits outage footprints. Only the affected feeder is isolated, improving reliability indices like SAIDI and SAIFI.</p>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-icon">💰</div>
+                        <h3>Lower costs</h3>
+                        <p>Preventing equipment damage and reducing outage duration translates to direct cost savings for utilities and their customers.</p>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-icon">📊</div>
+                        <h3>Better visibility</h3>
+                        <p>Real-time data on sequence currents and fault events give operators deeper insight into system health and fault patterns.</p>
+                    </div>
+                    <div class="card stat">
+                        <div class="stat-icon">🌍</div>
+                        <h3>Grid resilience</h3>
+                        <p>Proactive fault management strengthens the grid against aging infrastructure, extreme weather, and other stress factors.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="feasibility" class="section alt reveal">
+            <div class="container">
+                <h2>Feasibility and implementation</h2>
+                <div class="content-balanced">
+                    <div class="rich-text">
+                        <h3>Technical requirements</h3>
+                        <p>The solution requires three-phase current inputs from CTs on the monitored feeder. These CTs are standard equipment in most substations and on many pole-mounted devices. The algorithm runs on any device capable of real-time signal processing—modern microrelays, RTUs, or edge computers.</p>
+                        <p>Settings are straightforward: operators configure the I2/I1 threshold (typically 0.12-0.20), the time delay (0.5-2.0 seconds), and the minimum I1 level (5-10% of rated). These values are based on feeder characteristics and can be refined during commissioning.</p>
+                        <h3>Deployment pathway</h3>
+                        <p>A phased rollout begins with pilot installations on feeders with known conductor issues or high exposure. Data is collected for 3-6 months to validate settings and tune thresholds. Once proven, the scheme is expanded to additional feeders. Integration with SCADA allows centralized monitoring and event logging.</p>
+                        <p>The software can be deployed via firmware updates to existing relays (if supported) or by installing dedicated protection modules. Training for operators and maintenance staff is minimal, as the concepts are well-understood in the industry.</p>
+                    </div>
+                    <div class="card-balanced">
+                        <h3>What you need</h3>
+                        <ul class="checklist">
+                            <li>Three-phase current sensors (CTs) on the LT feeder</li>
+                            <li>Protection device or edge computer capable of running the algorithm</li>
+                            <li>Trip output connected to the feeder's circuit breaker or recloser</li>
+                            <li>Optional: SCADA integration for remote monitoring</li>
+                        </ul>
+                        <h3>Standards compliance</h3>
+                        <p class="note">The approach aligns with IEC 61850 (substation automation), IEEE C37.2 (device functions), and follows best practices from IEEE and CIGRE working groups on distribution protection.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="simulation" class="section reveal">
+            <div class="container">
+                <h2>Interactive simulation</h2>
+                <p class="intro">Press "Run simulation" to execute a model of an LT feeder under healthy and broken-conductor conditions. If your system has Python and OpenDSS installed, the backend will run a full power-flow simulation. Otherwise, realistic demo values are used.</p>
+                <div class="sim-layout">
+                    <div class="sim-controls">
+                        <button id="run-button" class="btn primary large">Run simulation</button>
+                        <div class="output-wrap">
+                            <h3>Console output</h3>
+                            <pre id="output" class="output">Awaiting simulation run…</pre>
+                        </div>
+                    </div>
+                    <div id="results-container" class="card results-hidden">
+                        <h3>Sequence current magnitudes</h3>
+                        <canvas id="sequence-chart" height="200"></canvas>
+                        <div id="logic-visualization" class="logic"></div>
+                        <div id="chart-explain" class="explain"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Smart LT Protection System</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

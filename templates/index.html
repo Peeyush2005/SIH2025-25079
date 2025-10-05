@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broken Conductor Fault Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Broken Conductor Fault Detection</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <h1>Broken Conductor Fault (BCF) Detection Simulation</h1>
+            
+            <div class="explanation">
+                <h2>How it Works</h2>
+                <p>This simulation demonstrates the detection of a broken conductor in a three-phase electrical power distribution system using the ANSI 46BC protection scheme.</p>
+                
+                <div class="concept">
+                    <h3>Three-Phase Power</h3>
+                    <p>Electrical power is often generated and distributed using a three-phase system. This involves three separate alternating currents (AC) that are out of phase with each other by 120 degrees. This provides a constant stream of power and is more efficient for transmitting electricity over long distances.</p>
+                    <img src="{{ url_for('static', filename='three_phase.png') }}" alt="Three-phase waveform diagram">
+                </div>
+                
+                <div class="concept">
+                    <h3>Symmetrical Components</h3>
+                    <p>When a power system is unbalanced (due to a fault or uneven loads), it becomes difficult to analyze. Charles Fortescue's theorem of symmetrical components allows us to simplify this by converting the unbalanced three-phase currents into three sets of balanced "symmetrical" components:</p>
+                    <ul>
+                        <li><strong>Positive Sequence (I1):</strong> A balanced set of three-phase currents with the normal phase rotation (A-B-C). This represents the normal, healthy operation of the system.</li>
+                        <li><strong>Negative Sequence (I2):</strong> A balanced set of three-phase currents with the opposite phase rotation (A-C-B). The magnitude of this component is usually very small in a healthy system but increases significantly during unbalanced faults, like a broken conductor.</li>
+                        <li><strong>Zero Sequence (I0):</strong> A set of three currents that are equal in magnitude and in phase with each other. These currents only flow in faults that involve a connection to the ground.</li>
+                    </ul>
+                    <p>By monitoring the ratio of the Negative Sequence (I2) to the Positive Sequence (I1), we can detect a broken conductor fault.</p>
+                </div>
+
+                <div class="concept">
+                    <h3>Impact of a Broken Conductor</h3>
+                    <p>The chart below shows the magnitudes of the positive (I1) and negative (I2) sequence currents under both healthy and faulted conditions. Notice how the I2 component increases dramatically when a conductor is broken.</p>
+                    <canvas id="sequence-chart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="concept">
+                    <h3>ANSI 46BC Detection Logic</h3>
+                    <p>The detection logic uses the ratio of I2 to I1. A trip signal is issued if this ratio exceeds a certain threshold for a specific amount of time.</p>
+                    <div id="logic-visualization">
+                        <!-- This will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="simulation">
+                <h2>Run the Simulation</h2>
+                <button id="run-button">Run Simulation</button>
+                <h3>Output:</h3>
+                <pre id="output">Click "Run Simulation" to see the output.</pre>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
