@@ -59,6 +59,14 @@ jobs:
         pkill node
         echo "✅ Node.js server test passed!"
 
+    - name: Create oryx build script
+      run: |
+        echo '#!/bin/bash' > oryx-build.sh
+        echo 'echo "Installing Python dependencies..."' >> oryx-build.sh
+        echo 'python3 -m pip install --upgrade pip' >> oryx-build.sh
+        echo 'python3 -m pip install -r requirements.txt' >> oryx-build.sh
+        chmod +x oryx-build.sh
+
     - name: Create deployment package
       run: |
         zip -r deploy.zip . -x "*.git*" "*.pyc" "__pycache__/*" "venv/*" ".venv/*" "*.zip"

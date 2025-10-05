@@ -66,8 +66,38 @@ app.get('/api/run', async (_req, res) => {
   console.log('BCF simulation requested');
   const result = await runPython([]);
   console.log('Python result:', { ok: result.ok, error: result.err, hasOutput: !!result.out });
-  if (result.ok) return res.json({ output: result.out });
-  return res.json({ output: 'Python/OpenDSS not available. Showing demo data on the chart. Error: ' + result.err });
+  
+  if (result.ok) {
+    return res.json({ output: result.out });
+  }
+  
+  // Provide demo simulation output when Python is not available
+  const demoOutput = `--------------------------------------------------
+--- Broken Conductor Detection Software Simulation ---
+*** DEMO MODE - Python/OpenDSS not available on Azure ***
+1. Model: 'LT_Feeder_Model.dss' (simulated)
+
+--- CASE 1: HEALTHY OPERATION ---
+  > I1 Magnitude (Positive Sequence): 154.78 A (Min Req: 6.40 A)
+  > I2 Magnitude (Negative Sequence): 11.81 A
+  > Calculated Ratio I2/I1: 0.0763 (Threshold: 0.15)
+  I2/I1 ratio is normal.
+-> Healthy System Status: NORMAL
+
+--- CASE 2: SIMULATE BCF (Phase A Open) ---
+2. Fault Simulated: Phase A of Line.L1 is open (simulated)
+  > I1 Magnitude (Positive Sequence): 102.35 A (Min Req: 6.40 A)
+  > I2 Magnitude (Negative Sequence): 53.61 A
+  > Calculated Ratio I2/I1: 0.5237 (Threshold: 0.15)
+  Broken Conductor condition confirmed by ratio check.
+  Waiting for definite time delay of 1.0 seconds...
+  *** TRIP COMMAND ISSUED to Breaker/Recloser controlling Line.L1 ***
+-> Faulted System Status: TRIPPED
+
+*** Note: This is demo data. Python/OpenDSS error: ${result.err} ***
+--------------------------------------------------`;
+  
+  return res.json({ output: demoOutput });
 });
 
 app.listen(PORT, () => {
