@@ -29,10 +29,11 @@ function trySpawn(cmd, args) {
 
 async function runPython(args) {
   const candidates = [
+    ['/usr/bin/python3', []],
+    ['python3', []],
     ['py', ['-3']],
     ['py', []],
     ['python', []],
-    ['python3', []],
   ];
   for (const [cmd, prefix] of candidates) {
     const result = await trySpawn(cmd, [...prefix, scriptPath, ...args]);
